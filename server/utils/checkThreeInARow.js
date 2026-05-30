@@ -86,4 +86,4 @@ const checkThreeRow = (board, playerIndex) => {
     return false;
 }
 
-module.exports = {checkThreeRow};
+module.exports = {checkThreeRow}

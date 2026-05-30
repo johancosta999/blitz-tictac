@@ -1,3 +1,5 @@
+import {createRoom} from ("../model/Room")
+
 const checkDraw = (board) => {
 
     for (let row = 0; row < 4; row++){
