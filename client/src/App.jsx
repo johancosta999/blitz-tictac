@@ -4,13 +4,13 @@ import Board from "./components/Board";
 import Scoreboard from "./components/Scoreboard";
 
 const App = () => {
-  const { connected, gameStarted, winner } = useGame();
+  const { gameStarted, winner } = useGame();  // connected not needed
 
-  if (??) {
+  if (winner !== null) {
     return <Scoreboard />;
   }
 
-  if (??) {
+  if (gameStarted) {
     return <Board />;
   }
 
