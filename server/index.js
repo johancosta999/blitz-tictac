@@ -7,7 +7,7 @@ const { swapHandler } = require("./controllers/swapHandler");
 const { bombHandler } = require("./controllers/bombHandler");
 const { timeoutHandler } = require("./controllers/timeoutHandler");
 
-const PORT = process.env.PORT || 8080;
+const PORT = process.env.PORT || 8082;
 const wss = new WebSocket.Server({ port: PORT });
 
 console.log(`Server running on port ${PORT}`);

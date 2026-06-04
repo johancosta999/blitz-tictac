@@ -11,7 +11,7 @@ const Scoreboard = () => {
   };
 
   return (
-    <div>
+    <div className="scoreboard">
       <h1>{getMessage()}</h1>
       <button onClick={() => window.location.reload()}>
         Play Again

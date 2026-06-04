@@ -1,17 +1,25 @@
 const broadcast = (room, message) => {
-
-    //loop through players
+    // loop through players
     room.players.forEach(player => {
-        if(player.socket.readyState === WebSocket.OPEN){
-            player.socket.send(JSON.stringify(message));
+        try {
+            if (player.socket && player.socket.readyState === 1) {
+                player.socket.send(JSON.stringify(message));
+            }
+        } catch (err) {
+            console.error('Error sending to player', err);
         }
     });
 
+    // loop through viewers
     room.viewers.forEach(viewer => {
-        if(viewer.readyState === WebSocket.OPEN){
-            viewer.send(JSON.stringify(message));
+        try {
+            if (viewer && viewer.readyState === 1) {
+                viewer.send(JSON.stringify(message));
+            }
+        } catch (err) {
+            console.error('Error sending to viewer', err);
         }
-    })
+    });
 
 };
 

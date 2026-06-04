@@ -17,6 +17,7 @@ export const GameProvider = ({ children }) => {
   const [status, setStatus] = useState("");
   const [swapMode, setSwapMode] = useState(false);
   const [bombMode, setBombMode] = useState(false);
+  const [lastSent, setLastSent] = useState(null);
 
   return (
     <GameContext.Provider value={{
@@ -35,6 +36,7 @@ export const GameProvider = ({ children }) => {
       status, setStatus,
       swapMode, setSwapMode,
       bombMode, setBombMode,
+      lastSent, setLastSent,
     }}>
       {children}
     </GameContext.Provider>

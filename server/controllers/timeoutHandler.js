@@ -14,6 +14,8 @@ const timeoutHandler = (ws, data, rooms) => {
     currentTurn: room.currentTurn,
     board: room.board,
   });
+  const { startTurnTimer } = require("../utils/turnTimer");
+  startTurnTimer(room);
 };
 
 module.exports = { timeoutHandler };

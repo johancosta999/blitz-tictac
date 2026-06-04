@@ -33,6 +33,9 @@ const swapHandler = (ws, data, rooms) => {
     currentTurn: room.currentTurn,
     swapUsed: room.swapUsed,
   });
+
+  const { startTurnTimer } = require("../utils/turnTimer");
+  startTurnTimer(room);
 };
 
 module.exports = { swapHandler };

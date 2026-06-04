@@ -1,5 +1,6 @@
 const { createRoom } = require("../models/Room");
 const { broadcast } = require("../utils/broadcast");
+const { startTurnTimer } = require("../utils/turnTimer");
 
 const joinHandler = (ws, data, rooms) => {
     const roomCode = data.room;
@@ -46,6 +47,7 @@ const joinHandler = (ws, data, rooms) => {
                 symbol: symbol,
             }
         ));
+        console.log(`Player joined room ${roomCode} as index ${playerIndex}`);
 
         //if 2 players are in the room
         if (room.players.length === 2){
@@ -55,6 +57,8 @@ const joinHandler = (ws, data, rooms) => {
                 board: room.board,
                 currentTurn: room.currentTurn,
             });
+            // start per-turn timer
+            startTurnTimer(room);
         }
     }
 

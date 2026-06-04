@@ -30,16 +30,14 @@ const Board = () => {
   sendMessage({ type: "move", row, col });
 };
 
-  if (!board) return <div>Loading...</div>;
+  if (!board) return <div className="loading">Loading...</div>;
+
+  const disabled = role !== "player" || currentTurn !== playerIndex;
+
+  console.log('Board render', { board, currentTurn, playerIndex, role });
 
   return (
-    <div
-      style={{
-        display: "grid",
-        gridTemplateColumns: "repeat(4, 80px)",
-        gap: "8px",
-      }}
-    >
+    <div className={`board ${disabled ? "disabled" : ""}`}>
       {board.map((row, rowIndex) =>
         row.map((cell, colIndex) => (
           <Cell

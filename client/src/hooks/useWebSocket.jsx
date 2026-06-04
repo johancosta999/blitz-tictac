@@ -3,6 +3,7 @@ import { useGame } from "../context/useGame";
 
 const useWebSocket = () => {
   const socketRef = useRef(null);
+  const pendingRef = useRef([]);
 
   const {
     setBoard,
@@ -17,12 +18,14 @@ const useWebSocket = () => {
     setBombUsed,
     setStatus,
   } = useGame();
+  const { setLastSent } = useGame();
 
   const connect = (roomCode, role) => {
-    const socket = new WebSocket("ws://localhost:8080");
+    const socket = new WebSocket("ws://localhost:8082");
     socketRef.current = socket;
 
     socket.onopen = () => {
+      console.log('WebSocket opened to', roomCode, role);
       socket.send(JSON.stringify({
         type: "join",
         room: roomCode,
@@ -31,7 +34,9 @@ const useWebSocket = () => {
     };
 
     socket.onmessage = (event) => {
+      console.log('WS message', event.data);
       const data = JSON.parse(event.data);
+      try { window.__lastWs = data; } catch(e){}
 
       if (data.type === "joined") {
         setConnected(true);
@@ -39,6 +44,18 @@ const useWebSocket = () => {
         if (data.role === "player") {
           setPlayerIndex(data.playerIndex);
           setSymbol(data.symbol);
+        }
+        // flush any pending messages queued before join
+        try {
+          const pending = pendingRef.current || [];
+          pending.forEach((msg) => {
+            if (socketRef.current?.readyState === WebSocket.OPEN) {
+              socketRef.current.send(JSON.stringify(msg));
+            }
+          });
+          pendingRef.current = [];
+        } catch (e) {
+          console.warn('Failed to flush pending messages', e);
         }
       }
 
@@ -88,9 +105,21 @@ const useWebSocket = () => {
   };
 
   const sendMessage = (message) => {
-    if (socketRef.current?.readyState === WebSocket.OPEN) {
+    const ready = socketRef.current?.readyState;
+    // if socket is open, send immediately
+    if (ready === WebSocket.OPEN) {
+      console.log('sending', message, 'readyState', ready);
+      try { setLastSent && setLastSent(JSON.stringify(message)); } catch(e){}
+      try { window.__lastSent = message; } catch(e){}
       socketRef.current.send(JSON.stringify(message));
+      return;
     }
+
+    // otherwise queue the message to send after join
+    console.log('queueing message, socket not open yet', message, 'readyState', ready);
+    pendingRef.current = pendingRef.current || [];
+    pendingRef.current.push(message);
+    try { setLastSent && setLastSent(JSON.stringify(message)); } catch(e){}
   };
 
   return { connect, sendMessage };

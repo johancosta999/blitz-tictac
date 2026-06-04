@@ -4,6 +4,7 @@ const { checkDraw } = require("../utils/checkDraw");
 const { broadcast } = require("../utils/broadcast");
 
 const moveHandler = (ws, data, rooms) => {
+  console.log('moveHandler called by', ws.playerIndex, 'data:', data);
 
   // Step 1 - get room and validate
   const room = rooms.get(ws.roomCode);
@@ -40,8 +41,8 @@ const moveHandler = (ws, data, rooms) => {
   }
 
   // Step 5 - check bomb unlock
-  if (checkThreeInARow(room.board, wsplayerIndex)) {
-    room.bombUnlocked[playerIndex] = true;
+  if (checkThreeInARow(room.board, ws.playerIndex)) {
+    room.bombUnlocked[ws.playerIndex] = true;
   }
 
   // Step 6 - switch turn and broadcast
@@ -51,7 +52,12 @@ const moveHandler = (ws, data, rooms) => {
     board: room.board,
     currentTurn: room.currentTurn,
     bombUnlocked: room.bombUnlocked,
+    swapUsed: room.swapUsed,
   });
+
+  // start timer for next turn
+  const { startTurnTimer } = require("../utils/turnTimer");
+  startTurnTimer(room);
 
 };
 

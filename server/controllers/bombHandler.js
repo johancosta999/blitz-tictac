@@ -32,6 +32,9 @@ const bombHandler = (ws, data, rooms) => {
     currentTurn: room.currentTurn,
     bombUsed: room.bombUsed,
   });
+
+  const { startTurnTimer } = require("../utils/turnTimer");
+  startTurnTimer(room);
 };
 
 module.exports = { bombHandler };

@@ -2,42 +2,46 @@ import { useState, useEffect, useRef } from "react";
 import { useGame } from "../context/useGame";
 import useWebSocket from "../hooks/useWebSocket";
 
+const TURN_MS = 3000;
+
 const Timer = () => {
-  const [timeLeft, setTimeLeft] = useState(2);
+  const [msLeft, setMsLeft] = useState(TURN_MS);
   const { currentTurn, playerIndex, gameStarted, role } = useGame();
   const { sendMessage } = useWebSocket();
-  const isFirstTick = useRef(true);
+  const rafRef = useRef(null);
+  const endRef = useRef(Date.now() + TURN_MS);
 
   useEffect(() => {
     if (!gameStarted) return;
+    // when currentTurn changes, reset timer
+    endRef.current = Date.now() + TURN_MS;
 
-    isFirstTick.current = true;
-
-    const interval = setInterval(() => {
-      if (isFirstTick.current) {
-        isFirstTick.current = false;
-        setTimeLeft(2);
-        return;
-      }
-
-      setTimeLeft((prev) => {
-        if (prev <= 1) {
-          clearInterval(interval);
-          if (role === "player" && currentTurn === playerIndex) {
-            sendMessage({ type: "timeout" });
-          }
-          return 2;
+    const tick = () => {
+      const remaining = Math.max(0, endRef.current - Date.now());
+      setMsLeft(remaining);
+      if (remaining <= 0) {
+        // when timer hits zero, if we're the active player send timeout
+        if (role === "player" && currentTurn === playerIndex) {
+          sendMessage({ type: "timeout" });
         }
-        return prev - 1;
-      });
-    }, 1000);
+        return; // stop updating until next turn change
+      }
+      rafRef.current = requestAnimationFrame(tick);
+    };
 
-    return () => clearInterval(interval);
+    rafRef.current = requestAnimationFrame(tick);
+
+    return () => {
+      if (rafRef.current) cancelAnimationFrame(rafRef.current);
+    };
   }, [currentTurn, gameStarted]); // eslint-disable-line
+
+  const seconds = Math.floor(msLeft / 1000);
+  const ms = msLeft % 1000;
 
   return (
     <div>
-      <p>Time left: {timeLeft}s</p>
+      <p>Time left: {seconds}.{String(ms).padStart(3,'0')}s</p>
     </div>
   );
 };
