@@ -2,6 +2,8 @@ import { useGame } from "./context/useGame";
 import Lobby from "./components/Lobby";
 import Board from "./components/Board";
 import Scoreboard from "./components/Scoreboard";
+import Timer from "./components/Timer"
+import PowerUps from "./components/PowerUps";
 
 const App = () => {
   const { gameStarted, winner } = useGame();  // connected not needed
@@ -11,8 +13,14 @@ const App = () => {
   }
 
   if (gameStarted) {
-    return <Board />;
-  }
+  return (
+    <div>
+      <Timer />
+      <Board />
+      <PowerUps />
+    </div>
+  );
+}
 
   return <Lobby />;
 };
