@@ -86,4 +86,6 @@ const checkThreeRow = (board, playerIndex) => {
     return false;
 }
 
-module.exports = {checkThreeRow}
+
+// to this
+module.exports = { checkThreeInARow: checkThreeRow }
