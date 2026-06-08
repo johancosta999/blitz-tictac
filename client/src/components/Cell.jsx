@@ -7,6 +7,8 @@ const Cell = ({ value, row, col, onClick }) => {
     return '';
   };
 
+  //X or O 
+
   const symbol = getSymbol();
   console.log(`Cell render ${row}-${col}: value=`, value, 'symbol=', symbol);
   const classes = ["cell"];
